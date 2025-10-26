@@ -10,7 +10,7 @@ A Calibre plugin that allows you to easily export your Calibre library — eithe
 
 - 📁 **Set Export Destination Path**  
   You **must** specify a destination path in the settings.  
-  This is the folder where your Calibre library will be exported.
+  This is the folder where your Calibre library will be exported to.
 
 - 🔁 **Auto-Export on Close (Optional)**  
   When enabled, Calibre will automatically export your library every time it closes:
