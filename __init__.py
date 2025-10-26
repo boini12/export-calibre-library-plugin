@@ -1,6 +1,6 @@
 from calibre.customize import InterfaceActionBase
 
-class ExportCalibreBooksAction(InterfaceActionBase):
+class InterfacePluginExport(InterfaceActionBase):
     name = "Automatic Export Calibre Books"
     description = "Export all books from the Calibre library to specified locations"
     supported_platforms = ['osx']
