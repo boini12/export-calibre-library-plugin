@@ -14,22 +14,39 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Important to get full git history
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get previous tag if it exists
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous tag found. Showing all commits."
+            git log --pretty=format:"- %s" > changelog.txt
+          else
+            echo "Changes since $PREV_TAG:"
+            git log "$PREV_TAG"..HEAD --pretty=format:"- %s" > changelog.txt
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat changelog.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create ZIP archive
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
-          filename: 'export_calibre_books_plugin.zip'
+          filename: "export_calibre_books_plugin_${{ github.ref_name }}.zip"
           exclusions: '*.git* /*node_modules/* .editorconfig README.md'
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: export_calibre_books_plugin.zip
-          name: Release ${{ github.ref_name }}
+          files: "export_calibre_books_plugin_${{ github.ref_name }}.zip"
+          name: "Release ${{ github.ref_name }}"
           body: |
             Changes in this Release
-            - First Change
-            - Second Change
+            ${{ steps.changelog.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
