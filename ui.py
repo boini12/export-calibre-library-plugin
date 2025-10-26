@@ -1,3 +1,5 @@
+from .export import export_books
+
 from calibre.gui2.actions import InterfaceAction
 from calibre_plugins.export_calibre_books.main import ExportDialog
 
@@ -28,4 +30,12 @@ class InterfacePlugin(InterfaceAction):
         '''
         Apply settings changed in the configuration dialog
         '''
-        pass    
+        pass   
+
+    def shutting_down(self):
+        '''
+        This method is called when Calibre is quitting.
+        '''
+        db = self.gui.current_db.new_api
+        current_db = self.gui.current_db
+        export_books(db, current_db)
