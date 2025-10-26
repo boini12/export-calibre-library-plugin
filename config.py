@@ -15,7 +15,7 @@ class ConfigWidget(QWidget):
         self.label = QLabel("Backup Destination:")
         self.l.addWidget(self.label)
 
-        self.msg = QlineEdit()
+        self.msg = QLineEdit()
         self.msg.setText(prefs['backup_destination'])
         self.l.addWidget(self.msg)
         self.label.setBuddy(self.msg)

@@ -7,7 +7,7 @@ from calibre.library import db
 
 CALIBRE_LIBRARY_LOCATION = "/Users/ibohr/Documents/Calibre"
 
-def export_books(src: Path, dest: Path):
+def export_books2(src: Path, dest: Path):
     date = get_current_data()
     backup_path = dest / f"calibre_backup_{date}"
     author_folder_paths = get_calibre_books()
@@ -44,4 +44,4 @@ if len(args) < 2:
     print("Please provide a destination path for the backup.")
     sys.exit(1)
 
-export_books(Path(CALIBRE_LIBRARY_LOCATION), Path(args[1]))
+export_books2(Path(CALIBRE_LIBRARY_LOCATION), Path(args[1]))
