@@ -8,7 +8,7 @@ class ExportDialog(QDialog):
         self.gui = gui
         self.do_user_config = do_user_config
 
-        self.db = gui.db.new_api
+        self.db = gui.current_db.new_api
         self.l = QVBoxLayout()
         self.setLayout(self.l)
 
