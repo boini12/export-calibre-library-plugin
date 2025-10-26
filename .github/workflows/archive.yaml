@@ -3,14 +3,22 @@ on:
   push:
     branches:
       - 'v*'
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: Archive Release
-      uses: thedoctor0/zip-release@0.7.5
-      with:
-        type: 'zip'
-        filename: 'export_calibre_books_plugin.zip'
-        exclusions: '*.git* /*node_modules/* .editorconfig README.md' 
+      - uses: actions/checkout@v4
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'export_calibre_books_plugin.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig README.md'
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: export_calibre_books_plugin.zip
+          path: export_calibre_books_plugin.zip
