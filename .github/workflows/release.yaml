@@ -1,25 +1,30 @@
-name: Create Release
+name: Create Tagged Release
 on:
   push:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
+      - name: Create ZIP archive
+        uses: thedoctor0/zip-release@0.7.5
         with:
-          name: export_calibre_books_plugin.zip
-          path: .
+          type: 'zip'
+          filename: 'export_calibre_books_plugin.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig README.md'
 
-      - name: Create Release
+      - name: Create GitHub Release
         id: create_release
-        uses: comnoco/create-release@v2
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
