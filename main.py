@@ -4,7 +4,7 @@ import shutil
 
 from calibre_plugins.export_calibre_books.config import prefs
 
-from qt.core import QDialog, QLabel, QMessageBox, QPushButton, QVBoxLayout
+from qt.core import QDialog, QLabel, QPushButton, QVBoxLayout
 
 class ExportDialog(QDialog):
     def __init__(self, gui, icon, do_user_config):
@@ -13,6 +13,7 @@ class ExportDialog(QDialog):
         self.do_user_config = do_user_config
 
         self.db = gui.current_db.new_api
+        self.current_db = gui.current_db
         self.l = QVBoxLayout()
         self.setLayout(self.l)
 
@@ -36,7 +37,7 @@ class ExportDialog(QDialog):
     def export_books(self):
         date = self._get_current_date()
         backup_destination = Path(prefs['backup_destination']) / f"calibre_backup_{date}"
-        author_folder_paths = self.get_author_folder_paths()
+        author_folder_paths = self._get_author_folder_paths()
         self._copy_to_backup(author_folder_paths, backup_destination)
 
     def config(self):
@@ -44,18 +45,18 @@ class ExportDialog(QDialog):
         self.label.setText(prefs['backup_destination'])
 
 
-    def _get_current_dat(self) -> str:
+    def _get_current_date(self) -> str:
         date = datetime.today().strftime('%Y-%m-%d')
         return date
 
-    def get_author_folder_paths(self) -> list[Path]:
+    def _get_author_folder_paths(self) -> list[Path]:
         book_ids = self.db.all_book_ids()
         author_folder_paths = []
 
         for book_id in book_ids:
             relative_book_path = self.db.get_book_path(book_id)
             relative_path_to_author_folder = Path(*Path(relative_book_path).parts[:-1])
-            abs_author_folder_path = Path(self.db.library_path) / relative_path_to_author_folder
+            abs_author_folder_path = Path(self.current_db.library_path) / relative_path_to_author_folder
             author_folder_paths.append(abs_author_folder_path)
         
         return author_folder_paths

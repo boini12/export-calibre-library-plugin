@@ -21,16 +21,16 @@ class InterfacePluginExport(InterfaceActionBase):
         '''
         Return an instance of the configuration widget for this plugin
         '''
-        # from calibre_plugins.export_calibre_books.config import ConfigWidget
-        # return ConfigWidget()
-
-        # Placeholder until config widget is implemented
-        return "Configuration widget not implemented yet", "Please implement the configuration widget."
+        from calibre_plugins.export_calibre_books.config import ConfigWidget
+        return ConfigWidget()
     
 
     def save_settings(self, config_widget):
         '''
         Save settings from the configuration widget
         '''
-        # Implement saving settings from config_widget
-        pass
+        config_widget.save_settings()
+
+        ac = self.actual_plugin_
+        if ac is not None:
+            ac.apply_settings()
