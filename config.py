@@ -1,6 +1,6 @@
 from calibre.utils.config import JSONConfig
 
-from qt.core import QLabel, QWidget, QLineEdit, QCheckBox, QVBOXLayout
+from qt.core import QLabel, QWidget, QLineEdit, QCheckBox, QVBoxLayout
 
 from .constant import SETTINGS_KEY_DESTINATION, SETTINGS_KEY_AUTOMATIC, DEFAULT_BACKUP_DESTINATION
 
@@ -12,7 +12,7 @@ prefs.defaults[SETTINGS_KEY_AUTOMATIC] = False
 class ConfigWidget(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-        self.l = QVBOXLayout()
+        self.l = QVBoxLayout()
         self.setLayout(self.l)
 
         self.label_destination = QLabel("Backup Destination:")
