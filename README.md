@@ -22,6 +22,7 @@ A Calibre plugin that allows you to easily export your Calibre library — eithe
 ## 🗂️ Export Structure
 
 When exported, the files are organized like this:
+``` text
 <destination_path>/
 calibre_backup_{date of export}/
 ├── Author Name/
@@ -31,6 +32,7 @@ calibre_backup_{date of export}/
 │ │ └── metadata.opf
 │ └── Another Book/
 └── Another Author/
+```
 
 Each export is stored in a date-stamped folder (e.g., `calibre_backup_2025-10-26`).
 
