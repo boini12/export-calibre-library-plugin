@@ -39,6 +39,9 @@ class ConfigWidget(QWidget):
 
         self.outer_layout.addLayout(self.auto_layout)
 
+        self.resize(self.sizeHint())
+
+
     def save_settings(self):
         prefs[SETTINGS_KEY_DESTINATION] = self.msg.text()
         prefs[SETTINGS_KEY_AUTOMATIC] = self.checked.isChecked()

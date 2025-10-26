@@ -1,9 +1,6 @@
 from .export import export_books
-from .constant import SETTINGS_KEY_DESTINATION
 
-from calibre_plugins.export_calibre_books.config import prefs
-
-from qt.core import QDialog, QLabel, QPushButton, QVBoxLayout
+from qt.core import QDialog, QPushButton, QVBoxLayout
 
 class ExportDialog(QDialog):
     def __init__(self, gui, icon, do_user_config):
@@ -15,9 +12,6 @@ class ExportDialog(QDialog):
         self.current_db = gui.current_db
         self.l = QVBoxLayout()
         self.setLayout(self.l)
-
-        self.label = QLabel("Export Calibre Books Plugin")
-        self.l.addWidget(self.label)
         
         self.setWindowTitle("Export Calibre Books")
         self.setWindowIcon(icon)
@@ -38,4 +32,3 @@ class ExportDialog(QDialog):
 
     def config(self):
         self.do_user_config(parent=self)
-        self.label.setText(prefs[SETTINGS_KEY_DESTINATION])
