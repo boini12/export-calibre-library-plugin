@@ -4,42 +4,47 @@ import os
 from pathlib import Path
 from datetime import datetime
 
+from .constant import EXPORT_PREFIX, SETTINGS_KEY_AUTOMATIC, SETTINGS_KEY_DESTINATION, DEFAULT_BACKUP_DESTINATION
+
 from calibre_plugins.export_calibre_books.config import prefs
 
 def export_books(db, current_db):
-        if prefs['backup_automatically'] is False:
+        if prefs[SETTINGS_KEY_AUTOMATIC] is False:
             return
+        
+        destination = prefs[SETTINGS_KEY_DESTINATION]
 
-        if prefs['backup_destination'] == '/path/to/backup/location':
+        if destination == DEFAULT_BACKUP_DESTINATION:
             return        
-        
-        date = _get_current_date()
-        prefix = "calibre_backup_"
-        
-        backup_dirs = [d for d in os.listdir(prefs['backup_destination']) 
-                      if d.startswith(prefix)]
+             
+        backup_dirs = [d for d in os.listdir(destination) 
+                      if d.startswith(EXPORT_PREFIX)]
         
         if backup_dirs:
             latest_backup = sorted(backup_dirs)[-1]
-            backup_destination = Path(prefs['backup_destination']) / latest_backup
+            backup_destination = Path(destination) / latest_backup
         else:
-            backup_destination = Path(prefs['backup_destination']) / f"{prefix}{date}"
+            backup_destination = Path(destination) / f"{EXPORT_PREFIX}{_get_current_date()}"
 
         if not backup_destination.exists():
+            backup_destination.mkdir(exist_ok=True)
             _export_whole_library(db, current_db, backup_destination)
 
         else:
+            new_dest = backup_destination.parent / (EXPORT_PREFIX + _get_current_date())
+            backup_destination.rename(Path(backup_destination.parent) / new_dest)
+            backup_destination = new_dest
             _export_updated_books(db, current_db, backup_destination)
        
 
 def _export_whole_library(db, current_db, backup_destination):
     author_folder_paths = _get_author_folder_paths(db=db, current_db=current_db)
-    _copy_to_backup(author_folder_paths, backup_destination)
+    _copy_to_backup(author_folder_paths, backup_destination, True)
 
 def _export_updated_books(db, current_db, backup_destination):
     relative_book_paths = _get_book_paths(db=db)
     new_books = _get_new_books(current_db, relative_book_paths, backup_destination)
-    _copy_to_backup(new_books, backup_destination)
+    _copy_to_backup(new_books, backup_destination, False)
 
 def _get_current_date() -> str:
     date = datetime.today().strftime('%Y-%m-%d')
@@ -79,14 +84,16 @@ def _get_new_books(current_db, relative_book_paths, backup_destination) -> list[
     return new_books
 
 def _copy_to_backup(src_paths: list[Path], dest: Path, full_export):
-    if not dest.exists():
-        dest.mkdir(exist_ok=True)
+    if not full_export:
+        print(len(src_paths), "book[s] to export.")
 
     for src_path in src_paths:
-        print(f"Copying {src_path} to {dest}")
         target_path = ""
         if full_export:
             target_path = dest / src_path.name
-        target_path = dest / src_path
-        print(f"Target path: {target_path}")
-        # shutil.copytree(src_path, target_path, dirs_exist_ok=True)
+        else:
+            target_path = dest / src_path.parent.name / src_path.name
+
+        print(f"Exporting {src_path} to {target_path}")
+
+        shutil.copytree(src_path, target_path, dirs_exist_ok=True)

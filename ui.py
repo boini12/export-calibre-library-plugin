@@ -30,7 +30,7 @@ class InterfacePlugin(InterfaceAction):
         '''
         Apply settings changed in the configuration dialog
         '''
-        pass   
+        pass
 
     def shutting_down(self):
         '''

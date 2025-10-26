@@ -1,12 +1,9 @@
-from datetime import datetime
-from pathlib import Path
-import shutil
-
 from .export import export_books
+from .constant import SETTINGS_KEY_DESTINATION
 
 from calibre_plugins.export_calibre_books.config import prefs
 
-from qt.core import QDialog, QLabel, QPushButton, QVBoxLayout, QCheckBox
+from qt.core import QDialog, QLabel, QPushButton, QVBoxLayout
 
 class ExportDialog(QDialog):
     def __init__(self, gui, icon, do_user_config):
@@ -41,4 +38,4 @@ class ExportDialog(QDialog):
 
     def config(self):
         self.do_user_config(parent=self)
-        self.label.setText(prefs['backup_destination'])
+        self.label.setText(prefs[SETTINGS_KEY_DESTINATION])

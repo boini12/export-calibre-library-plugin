@@ -3,8 +3,8 @@ from calibre.customize import InterfaceActionBase
 class InterfacePluginExport(InterfaceActionBase):
     name = "Automatic Export Calibre Books"
     description = "Export all books from the Calibre library to specified locations"
-    supported_platforms = ['osx']
-    author = 'ibohr'
+    supported_platforms = ['osx', 'linux', 'windows']
+    author = 'boini12'
     version = (1, 0, 0)
     minimum_calibre_version = (0, 7, 53)
 
