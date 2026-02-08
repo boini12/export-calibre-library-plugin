@@ -44,6 +44,12 @@ Each export is stored in a date-stamped folder (e.g., `calibre_backup_2025-10-26
 4. (Optional) Enable **Auto Export on Close**.
 5. Close Calibre or trigger the export manually.
 
+## :rocket: Running the Project
+1. Clone the repository
+2. Have Calibre installed
+3. Open repository in your preferred IDE, e.g., VS Code
+4. Run calibre-debug -g to start Calibre in debug mode
+
 ## 🧠 Notes
 
 - Ensure that the destination path has sufficient storage space.
