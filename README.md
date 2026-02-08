@@ -47,8 +47,9 @@ Each export is stored in a date-stamped folder (e.g., `calibre_backup_2025-10-26
 ## :rocket: Running the Project
 1. Clone the repository
 2. Have Calibre installed
-3. Open repository in your preferred IDE, e.g., VS Code
-4. Run calibre-debug -g to start Calibre in debug mode
+3. Start Calibre in debug mode by using this command in the root folder of the repository
+   ```bash
+   calibre-debug -g
 
 ## 🧠 Notes
 
