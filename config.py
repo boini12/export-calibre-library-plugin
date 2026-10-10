@@ -1,3 +1,5 @@
+from typing import List
+
 from calibre.utils.config import JSONConfig
 
 from qt.core import QLabel, QWidget, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton
@@ -10,20 +12,17 @@ prefs.defaults[SETTINGS_KEY_DESTINATION] = DEFAULT_BACKUP_DESTINATION
 prefs.defaults[SETTINGS_KEY_AUTOMATIC] = False
 
 class ConfigWidget(QWidget):
+    destinations: List[str] = []
+
     def __init__(self):
         QWidget.__init__(self)
         self.outer_layout = QVBoxLayout()
         self.setLayout(self.outer_layout)
 
-        self.destination_layout = QHBoxLayout()
+        self.destination_layout = QVBoxLayout()
 
-        self.label_destination = QLabel("Backup Destination:")
-        self.destination_layout.addWidget(self.label_destination)
-
-        self.msg = QLineEdit()
-        self.msg.setText(prefs[SETTINGS_KEY_DESTINATION])
-        self.destination_layout.addWidget(self.msg)
-        self.label_destination.setBuddy(self.msg)
+        self.destinations = prefs[SETTINGS_KEY_DESTINATION].split(",") if prefs[SETTINGS_KEY_DESTINATION] else []
+        self.build_destinations()
 
         self.outer_layout.addLayout(self.destination_layout)
 
@@ -55,11 +54,42 @@ class ConfigWidget(QWidget):
 
 
     def save_settings(self):
-        prefs[SETTINGS_KEY_DESTINATION] = self.msg.text()
+        prefs[SETTINGS_KEY_DESTINATION] = self.destinations
         prefs[SETTINGS_KEY_AUTOMATIC] = self.checked.isChecked()
 
 
-    def add_destination(self):
+    def new_destination_requested(self):
         new_destination = QLineEdit()
         new_destination.setPlaceholderText("Enter additional backup destination")
         self.extend_destintions_layout.insertWidget(self.extend_destintions_layout.count() - 1, new_destination)
+        self.extend_destinations_button.setEnabled(False)
+        self.add_destination_button = QPushButton("Add")
+        self.add_destination_button.setToolTip("Add the new backup destination.")
+        self.add_destination_button.setFixedSize(40, 20)
+        self.add_destination_button.clicked.connect(lambda: self.add_destination("Hello World"))
+
+
+    def cache_destination(self, destination: str):
+        if destination and destination not in self.destinations and destination != "":
+            self.destinations.append(destination)
+
+
+    def add_destination(self, destination: str):
+        self.cache_destination(destination)
+        self.extend_destintions_layout.addLayout(self.destination_row(destination))
+        self.extend_destinations_button.setEnabled(True)
+
+
+    def build_destinations(self):
+        for destination in self.destinations:
+            self.destination_layout.addLayout(self.destination_row(destination))
+
+
+    def destination_row(self, destination: str) -> QHBoxLayout:
+        row = QHBoxLayout()
+        label = QLabel(f"Backup Destination:")
+        field = QLineEdit(destination)
+        label.setBuddy(field)
+        row.addWidget(label)
+        row.addWidget(field)
+        return row
