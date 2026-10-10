@@ -103,7 +103,7 @@ class ConfigWidget(QWidget):
 
 
     def cache_destination(self, destination: str):
-        if destination and destination not in self.destinations and destination != "":
+        if destination and destination not in self.destinations:
             self.destinations.append(destination)
 
 
