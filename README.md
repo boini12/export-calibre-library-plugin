@@ -204,7 +204,6 @@ Project Link: [https://github.com/boini12/calibre_automatic_sync_to_external_har
 * [Calibre Plugin Development Documentation](https://manual.calibre-ebook.com/creating_plugins.html)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 * [Img Shields](https://shields.io)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
