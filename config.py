@@ -10,7 +10,7 @@ from .path_line_edit import PathLineEdit
 
 prefs = JSONConfig('plugins/export_calibre_books')
 
-prefs.defaults[SETTINGS_KEY_DESTINATION] = DEFAULT_BACKUP_DESTINATION
+prefs.defaults[SETTINGS_KEY_DESTINATION] = [DEFAULT_BACKUP_DESTINATION]
 prefs.defaults[SETTINGS_KEY_AUTOMATIC] = False
 
 class ConfigWidget(QWidget):

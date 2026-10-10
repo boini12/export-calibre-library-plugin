@@ -9,34 +9,67 @@ from .constant import EXPORT_PREFIX, SETTINGS_KEY_AUTOMATIC, SETTINGS_KEY_DESTIN
 from calibre_plugins.export_calibre_books.config import prefs
 
 def export_books(db, current_db):
-        if prefs[SETTINGS_KEY_AUTOMATIC] is False:
-            return
-        
-        destinations = prefs[SETTINGS_KEY_DESTINATION]
+    if prefs[SETTINGS_KEY_AUTOMATIC] is False:
+        return
 
-        for destination in destinations:
-            if destination == DEFAULT_BACKUP_DESTINATION:
-                return        
-             
-        backup_dirs = [d for d in os.listdir(destination) 
-                      if d.startswith(EXPORT_PREFIX)]
-        
-        if backup_dirs:
-            latest_backup = sorted(backup_dirs)[-1]
-            backup_destination = Path(destination) / latest_backup
-        else:
-            backup_destination = Path(destination) / f"{EXPORT_PREFIX}{_get_current_date()}"
+    destinations = prefs[SETTINGS_KEY_DESTINATION]
 
-        if not backup_destination.exists():
-            backup_destination.mkdir(exist_ok=True)
-            _export_whole_library(db, current_db, backup_destination)
+    # Settings saved by an older version of the plugin hold a single path
+    # instead of a list, and iterating that would walk its characters.
+    if isinstance(destinations, str):
+        destinations = [destinations]
 
-        else:
-            new_dest = backup_destination.parent / (EXPORT_PREFIX + _get_current_date())
-            backup_destination.rename(Path(backup_destination.parent) / new_dest)
-            backup_destination = new_dest
-            _export_updated_books(db, current_db, backup_destination)
-       
+    for destination in destinations:
+        if destination == DEFAULT_BACKUP_DESTINATION:
+            continue
+
+        if not _is_connected(destination):
+            print(f"Skipping {destination}: destination is not connected.")
+            continue
+
+        try:
+            _export_to_destination(db, current_db, destination)
+        except OSError as error:
+            # The drive can also go away in the middle of an export, so the
+            # other destinations still get their turn.
+            print(f"Skipping {destination}: export failed ({error}).")
+
+
+def _is_connected(destination) -> bool:
+    '''
+    A destination on an external drive or a cloud drive is simply not there
+    while the drive is not connected, so it is skipped instead of failing the
+    whole export. Listing it is the cheapest way to also catch a mount point
+    that still exists but cannot be read.
+    '''
+    try:
+        os.listdir(destination)
+    except OSError:
+        return False
+
+    return True
+
+
+def _export_to_destination(db, current_db, destination):
+    backup_dirs = [d for d in os.listdir(destination)
+                   if d.startswith(EXPORT_PREFIX)]
+
+    if backup_dirs:
+        latest_backup = sorted(backup_dirs)[-1]
+        backup_destination = Path(destination) / latest_backup
+    else:
+        backup_destination = Path(destination) / f"{EXPORT_PREFIX}{_get_current_date()}"
+
+    if not backup_destination.exists():
+        backup_destination.mkdir(exist_ok=True)
+        _export_whole_library(db, current_db, backup_destination)
+
+    else:
+        new_dest = backup_destination.parent / (EXPORT_PREFIX + _get_current_date())
+        backup_destination.rename(Path(backup_destination.parent) / new_dest)
+        backup_destination = new_dest
+        _export_updated_books(db, current_db, backup_destination)
+
 
 def _export_whole_library(db, current_db, backup_destination):
     author_folder_paths = _get_author_folder_paths(db=db, current_db=current_db)
