@@ -2,15 +2,16 @@ from qt.core import Qt, QFontMetrics, QLineEdit
 
 class PathLineEdit(QLineEdit):
     '''
-    Line edit for paths that are usually wider than the field. The beginning of
-    the path is replaced by an ellipsis so that the end of the path - the
-    interesting part - stays readable, and more of it reappears as the field
-    gets wider. The full path is shown while the field is being edited and is
-    always what text() returns.
+    Read-only line edit for paths that are usually wider than the field. The
+    beginning of the path is replaced by an ellipsis so that the end of the
+    path - the interesting part - stays readable, and more of it reappears as
+    the field gets wider. The full path is shown while the field has focus, so
+    that it can be selected and copied, and is always what text() returns.
     '''
 
     def __init__(self, text: str = "", parent=None):
         QLineEdit.__init__(self, parent)
+        self.setReadOnly(True)
         self.full_text = text
         self.setToolTip(text)
         self.update_shown_text()
@@ -26,7 +27,7 @@ class PathLineEdit(QLineEdit):
 
 
     def text(self) -> str:
-        return QLineEdit.text(self) if self.hasFocus() else self.full_text
+        return self.full_text
 
 
     def focusInEvent(self, event):
@@ -35,8 +36,6 @@ class PathLineEdit(QLineEdit):
 
 
     def focusOutEvent(self, event):
-        self.full_text = QLineEdit.text(self)
-        self.setToolTip(self.full_text)
         QLineEdit.focusOutEvent(self, event)
         self.update_shown_text()
 

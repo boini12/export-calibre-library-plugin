@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 
 from calibre.utils.config import JSONConfig
 
@@ -14,10 +13,11 @@ prefs.defaults[SETTINGS_KEY_DESTINATION] = [DEFAULT_BACKUP_DESTINATION]
 prefs.defaults[SETTINGS_KEY_AUTOMATIC] = False
 
 class ConfigWidget(QWidget):
-    destinations: List[str] = []
-
     def __init__(self):
         QWidget.__init__(self)
+
+        self.destinations = prefs[SETTINGS_KEY_DESTINATION]
+
         self.outer_layout = QVBoxLayout()
         self.setLayout(self.outer_layout)
 
@@ -26,7 +26,6 @@ class ConfigWidget(QWidget):
 
         self.destinations_layout = QVBoxLayout()
 
-        self.destinations = prefs[SETTINGS_KEY_DESTINATION]
         self.build_destinations()
 
         self.outer_layout.addLayout(self.destinations_layout)
