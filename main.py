@@ -13,7 +13,7 @@ class ExportDialog(QDialog):
         self.l = QVBoxLayout()
         self.setLayout(self.l)
         
-        self.setWindowTitle("Export Calibre Books")
+        self.setWindowTitle("Export")
         self.setWindowIcon(icon)
 
         self.conf_button = QPushButton("Configure Backup Settings", self)
