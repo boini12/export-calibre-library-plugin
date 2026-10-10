@@ -1,6 +1,8 @@
+from .constant import SETTINGS_KEY_AUTOMATIC
 from .export import export_books
 
 from calibre.gui2.actions import InterfaceAction
+from calibre_plugins.export_calibre_books.config import prefs
 from calibre_plugins.export_calibre_books.main import ExportDialog
 
 class InterfacePlugin(InterfaceAction):
@@ -17,9 +19,9 @@ class InterfacePlugin(InterfaceAction):
         icon = get_icons('images/icon.png', 'Export Calibre Books Plugin')
         
         self.qaction.setIcon(icon)
-        self.qaction.triggered.connect(self.show_dialog)
+        self.qaction.triggered.connect(self._show_dialog)
 
-    def show_dialog(self):
+    def _show_dialog(self):
         base_plugin_object = self.interface_action_base_plugin
         do_user_config = base_plugin_object.do_user_config
 
@@ -36,6 +38,9 @@ class InterfacePlugin(InterfaceAction):
         '''
         This method is called when Calibre is quitting.
         '''
+        if prefs[SETTINGS_KEY_AUTOMATIC] is False:
+            return
+
         db = self.gui.current_db.new_api
         current_db = self.gui.current_db
         export_books(db, current_db)
