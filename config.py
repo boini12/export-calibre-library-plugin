@@ -125,7 +125,7 @@ class ConfigWidget(QWidget):
 
 
     def _cache_destination(self, destination: str):
-        if destination and destination not in self.destinations:
+        if self._is_destination_valid(destination):
             self.destinations.append(destination)
 
 
