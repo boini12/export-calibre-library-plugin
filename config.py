@@ -1,6 +1,6 @@
 from calibre.utils.config import JSONConfig
 
-from qt.core import QLabel, QWidget, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout
+from qt.core import QLabel, QWidget, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton
 
 from .constant import SETTINGS_KEY_DESTINATION, SETTINGS_KEY_AUTOMATIC, DEFAULT_BACKUP_DESTINATION
 
@@ -27,6 +27,18 @@ class ConfigWidget(QWidget):
 
         self.outer_layout.addLayout(self.destination_layout)
 
+        self.extend_destintions_layout = QHBoxLayout()
+
+        self.extend_destinations_button = QPushButton("+")
+        self.extend_destinations_button.setToolTip("Add additional backup destinations.")
+        self.extend_destinations_button.setFixedSize(20, 20)
+        self.extend_destinations_button.clicked.connect(self.add_destination)
+
+        self.extend_destintions_layout.addWidget(self.extend_destinations_button)
+        self.extend_destintions_layout.addStretch()
+        
+        self.outer_layout.addLayout(self.extend_destintions_layout)
+
         self.auto_layout = QHBoxLayout()
 
         self.auto_backup_label = QLabel("Export new books each time Calibre is closed:")
@@ -45,3 +57,9 @@ class ConfigWidget(QWidget):
     def save_settings(self):
         prefs[SETTINGS_KEY_DESTINATION] = self.msg.text()
         prefs[SETTINGS_KEY_AUTOMATIC] = self.checked.isChecked()
+
+
+    def add_destination(self):
+        new_destination = QLineEdit()
+        new_destination.setPlaceholderText("Enter additional backup destination")
+        self.extend_destintions_layout.insertWidget(self.extend_destintions_layout.count() - 1, new_destination)
