@@ -59,18 +59,30 @@ class ConfigWidget(QWidget):
 
 
     def new_destination_requested(self):
-        new_destination_field = QLineEdit()
-        new_destination_field.setPlaceholderText("Enter additional backup destination")
+        self.new_destination_field = QLineEdit()
+        self.new_destination_field.setPlaceholderText("Enter additional backup destination")
 
         self.extend_destinations_button.setEnabled(False)
 
         self.add_destination_button = QPushButton("Add")
         self.add_destination_button.setToolTip("Add the new backup destination.")
         self.add_destination_button.setFixedSize(40, 20)
-        self.add_destination_button.clicked.connect(lambda: self.add_destination(new_destination_field.text()))
+        self.add_destination_button.clicked.connect(lambda: self.add_destination(self.new_destination_field.text()))
 
-        self.extend_destintions_layout.addWidget(new_destination_field)
+        self.show_new_destination_field()
+
+
+    def show_new_destination_field(self):
+        self.extend_destintions_layout.addWidget(self.new_destination_field)
         self.extend_destintions_layout.addWidget(self.add_destination_button)
+
+
+    def hide_new_destination_field(self):
+        self.extend_destintions_layout.removeWidget(self.new_destination_field)
+        self.new_destination_field.deleteLater()
+        self.extend_destintions_layout.removeWidget(self.add_destination_button)
+        self.add_destination_button.deleteLater()
+        self.extend_destinations_button.setEnabled(True)
 
 
     def cache_destination(self, destination: str):
@@ -80,6 +92,7 @@ class ConfigWidget(QWidget):
 
     def add_destination(self, destination: str):
         self.cache_destination(destination)
+        self.hide_new_destination_field()
         self.destination_layout.addLayout(self.destination_row(destination))
         self.extend_destinations_button.setEnabled(True)
 
