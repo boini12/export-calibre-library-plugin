@@ -12,10 +12,11 @@ def export_books(db, current_db):
         if prefs[SETTINGS_KEY_AUTOMATIC] is False:
             return
         
-        destination = prefs[SETTINGS_KEY_DESTINATION]
+        destinations = prefs[SETTINGS_KEY_DESTINATION]
 
-        if destination == DEFAULT_BACKUP_DESTINATION:
-            return        
+        for destination in destinations:
+            if destination == DEFAULT_BACKUP_DESTINATION:
+                return        
              
         backup_dirs = [d for d in os.listdir(destination) 
                       if d.startswith(EXPORT_PREFIX)]

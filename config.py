@@ -21,7 +21,7 @@ class ConfigWidget(QWidget):
 
         self.destination_layout = QVBoxLayout()
 
-        self.destinations = prefs[SETTINGS_KEY_DESTINATION].split(",") if prefs[SETTINGS_KEY_DESTINATION] else []
+        self.destinations = prefs[SETTINGS_KEY_DESTINATION]
         self.build_destinations()
 
         self.outer_layout.addLayout(self.destination_layout)
@@ -31,7 +31,7 @@ class ConfigWidget(QWidget):
         self.extend_destinations_button = QPushButton("+")
         self.extend_destinations_button.setToolTip("Add additional backup destinations.")
         self.extend_destinations_button.setFixedSize(20, 20)
-        self.extend_destinations_button.clicked.connect(self.add_destination)
+        self.extend_destinations_button.clicked.connect(self.new_destination_requested)
 
         self.extend_destintions_layout.addWidget(self.extend_destinations_button)
         self.extend_destintions_layout.addStretch()
@@ -59,14 +59,18 @@ class ConfigWidget(QWidget):
 
 
     def new_destination_requested(self):
-        new_destination = QLineEdit()
-        new_destination.setPlaceholderText("Enter additional backup destination")
-        self.extend_destintions_layout.insertWidget(self.extend_destintions_layout.count() - 1, new_destination)
+        new_destination_field = QLineEdit()
+        new_destination_field.setPlaceholderText("Enter additional backup destination")
+
         self.extend_destinations_button.setEnabled(False)
+
         self.add_destination_button = QPushButton("Add")
         self.add_destination_button.setToolTip("Add the new backup destination.")
         self.add_destination_button.setFixedSize(40, 20)
-        self.add_destination_button.clicked.connect(lambda: self.add_destination("Hello World"))
+        self.add_destination_button.clicked.connect(lambda: self.add_destination(new_destination_field.text()))
+
+        self.extend_destintions_layout.addWidget(new_destination_field)
+        self.extend_destintions_layout.addWidget(self.add_destination_button)
 
 
     def cache_destination(self, destination: str):
@@ -76,7 +80,7 @@ class ConfigWidget(QWidget):
 
     def add_destination(self, destination: str):
         self.cache_destination(destination)
-        self.extend_destintions_layout.addLayout(self.destination_row(destination))
+        self.destination_layout.addLayout(self.destination_row(destination))
         self.extend_destinations_button.setEnabled(True)
 
 
