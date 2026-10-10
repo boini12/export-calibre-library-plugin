@@ -5,7 +5,7 @@ class InterfacePluginExport(InterfaceActionBase):
     description = "Export all books from the Calibre library to specified locations"
     supported_platforms = ['osx', 'linux', 'windows']
     author = 'boini12'
-    version = (1, 0, 0)
+    version = (1, 1, 0)
     minimum_calibre_version = (0, 7, 53)
 
     actual_plugin = 'calibre_plugins.export_calibre_books.ui:InterfacePlugin'
