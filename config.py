@@ -86,11 +86,6 @@ class ConfigWidget(QWidget):
         prefs[SETTINGS_KEY_DESTINATIONS] = self.destinations
         prefs[SETTINGS_KEY_AUTOMATIC] = self.checked.isChecked()
 
-        # The destinations have been migrated to the new key, so drop the old
-        # one instead of leaving settings behind that nothing reads.
-        if LEGACY_SETTINGS_KEY_DESTINATION in prefs:
-            del prefs[LEGACY_SETTINGS_KEY_DESTINATION]
-
 
     def new_destination_requested(self):
         self.new_destination_field = QLineEdit()
@@ -105,7 +100,7 @@ class ConfigWidget(QWidget):
         self.add_destination_button.clicked.connect(lambda: self.add_destination(self.new_destination_field.text()))
 
         self.new_destination_field.textChanged.connect(
-            lambda text: self.add_destination_button.setEnabled(self.destination_exists(text))
+            lambda text: self.add_destination_button.setEnabled(self.is_destination_valid(text))
         )
 
         self.show_new_destination_field()
@@ -124,9 +119,9 @@ class ConfigWidget(QWidget):
         self.extend_destinations_button.setEnabled(True)
 
 
-    def destination_exists(self, destination: str) -> bool:
+    def is_destination_valid(self, destination: str) -> bool:
         destination = destination.strip()
-        return destination != "" and Path(destination).is_dir()
+        return destination != "" and Path(destination).is_dir() and destination not in self.destinations
 
 
     def cache_destination(self, destination: str):
