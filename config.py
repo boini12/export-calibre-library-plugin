@@ -4,19 +4,41 @@ from calibre.utils.config import JSONConfig
 
 from qt.core import QLabel, QWidget, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton
 
-from .constant import SETTINGS_KEY_DESTINATION, SETTINGS_KEY_AUTOMATIC, DEFAULT_BACKUP_DESTINATION
+from .constant import SETTINGS_KEY_DESTINATIONS, LEGACY_SETTINGS_KEY_DESTINATION, SETTINGS_KEY_AUTOMATIC, DEFAULT_BACKUP_DESTINATION
 from .path_line_edit import PathLineEdit
 
 prefs = JSONConfig('plugins/export_calibre_books')
 
-prefs.defaults[SETTINGS_KEY_DESTINATION] = [DEFAULT_BACKUP_DESTINATION]
+prefs.defaults[SETTINGS_KEY_DESTINATIONS] = [DEFAULT_BACKUP_DESTINATION]
 prefs.defaults[SETTINGS_KEY_AUTOMATIC] = False
+
+
+def get_destinations() -> list[str]:
+    '''
+    The configured backup destinations.
+
+    Settings saved before SETTINGS_KEY_DESTINATIONS existed are read from the
+    legacy key instead, and are written to the new key the next time settings
+    are saved. The returned list is always a copy, because JSONConfig hands out
+    the stored list itself and appending to that would edit the settings - or,
+    when nothing is stored yet, the defaults - behind the dialog's back.
+    '''
+    if SETTINGS_KEY_DESTINATIONS in prefs:
+        return list(prefs[SETTINGS_KEY_DESTINATIONS])
+
+    if LEGACY_SETTINGS_KEY_DESTINATION in prefs:
+        legacy = prefs[LEGACY_SETTINGS_KEY_DESTINATION]
+        # Version 1.0.0 stored a single path, later unreleased builds a list.
+        return [legacy] if isinstance(legacy, str) else list(legacy)
+
+    return list(prefs.defaults[SETTINGS_KEY_DESTINATIONS])
+
 
 class ConfigWidget(QWidget):
     def __init__(self):
         QWidget.__init__(self)
 
-        self.destinations = prefs[SETTINGS_KEY_DESTINATION]
+        self.destinations = get_destinations()
 
         self.outer_layout = QVBoxLayout()
         self.setLayout(self.outer_layout)
@@ -61,8 +83,13 @@ class ConfigWidget(QWidget):
 
 
     def save_settings(self):
-        prefs[SETTINGS_KEY_DESTINATION] = self.destinations
+        prefs[SETTINGS_KEY_DESTINATIONS] = self.destinations
         prefs[SETTINGS_KEY_AUTOMATIC] = self.checked.isChecked()
+
+        # The destinations have been migrated to the new key, so drop the old
+        # one instead of leaving settings behind that nothing reads.
+        if LEGACY_SETTINGS_KEY_DESTINATION in prefs:
+            del prefs[LEGACY_SETTINGS_KEY_DESTINATION]
 
 
     def new_destination_requested(self):

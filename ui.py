@@ -1,6 +1,8 @@
+from .constant import SETTINGS_KEY_AUTOMATIC
 from .export import export_books
 
 from calibre.gui2.actions import InterfaceAction
+from calibre_plugins.export_calibre_books.config import prefs
 from calibre_plugins.export_calibre_books.main import ExportDialog
 
 class InterfacePlugin(InterfaceAction):
@@ -36,6 +38,9 @@ class InterfacePlugin(InterfaceAction):
         '''
         This method is called when Calibre is quitting.
         '''
+        if prefs[SETTINGS_KEY_AUTOMATIC] is False:
+            return
+
         db = self.gui.current_db.new_api
         current_db = self.gui.current_db
         export_books(db, current_db)

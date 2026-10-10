@@ -4,22 +4,17 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-from .constant import EXPORT_PREFIX, SETTINGS_KEY_AUTOMATIC, SETTINGS_KEY_DESTINATION, DEFAULT_BACKUP_DESTINATION
+from .constant import EXPORT_PREFIX, DEFAULT_BACKUP_DESTINATION
 
-from calibre_plugins.export_calibre_books.config import prefs
+from calibre_plugins.export_calibre_books.config import get_destinations
 
 def export_books(db, current_db):
-    if prefs[SETTINGS_KEY_AUTOMATIC] is False:
-        return
-
-    destinations = prefs[SETTINGS_KEY_DESTINATION]
-
-    # Settings saved by an older version of the plugin hold a single path
-    # instead of a list, and iterating that would walk its characters.
-    if isinstance(destinations, str):
-        destinations = [destinations]
-
-    for destination in destinations:
+    '''
+    Export to every configured destination. Whether an export should happen at
+    all is up to the caller: the manual button always exports, the shutdown
+    hook only when the user asked for automatic exports.
+    '''
+    for destination in get_destinations():
         if destination == DEFAULT_BACKUP_DESTINATION:
             continue
 
