@@ -74,7 +74,12 @@ class ConfigWidget(QWidget):
         self.add_destination_button = QPushButton("Add")
         self.add_destination_button.setToolTip("Add the new backup destination.")
         self.add_destination_button.setFixedSize(40, 20)
+        self.add_destination_button.setEnabled(False)
         self.add_destination_button.clicked.connect(lambda: self.add_destination(self.new_destination_field.text()))
+
+        self.new_destination_field.textChanged.connect(
+            lambda text: self.add_destination_button.setEnabled(text != "")
+        )
 
         self.show_new_destination_field()
 
