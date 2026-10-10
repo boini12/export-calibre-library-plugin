@@ -18,13 +18,17 @@ class ConfigWidget(QWidget):
         QWidget.__init__(self)
         self.outer_layout = QVBoxLayout()
         self.setLayout(self.outer_layout)
+        self.outer_layout.addStretch()
 
-        self.destination_layout = QVBoxLayout()
+        self.destinations_label = QLabel("Backup Destinations:")
+        self.outer_layout.addWidget(self.destinations_label)
+
+        self.destinations_layout = QVBoxLayout()
 
         self.destinations = prefs[SETTINGS_KEY_DESTINATION]
         self.build_destinations()
 
-        self.outer_layout.addLayout(self.destination_layout)
+        self.outer_layout.addLayout(self.destinations_layout)
 
         self.extend_destintions_layout = QHBoxLayout()
 
@@ -90,23 +94,42 @@ class ConfigWidget(QWidget):
             self.destinations.append(destination)
 
 
+    def remove_cached_destination(self, destination: str):
+        if destination in self.destinations:
+            self.destinations.remove(destination)
+
+
+    def remove_destination(self, destination: str, row: QHBoxLayout):
+        self.remove_cached_destination(destination)
+        self.destinations_layout.removeItem(row)
+        for i in reversed(range(row.count())):
+            widget = row.itemAt(i).widget()
+            if widget is not None:
+                widget.setParent(None)
+
+
     def add_destination(self, destination: str):
         self.cache_destination(destination)
         self.hide_new_destination_field()
-        self.destination_layout.addLayout(self.destination_row(destination))
+        self.destinations_layout.addLayout(self.destination_row(destination))
         self.extend_destinations_button.setEnabled(True)
 
 
     def build_destinations(self):
         for destination in self.destinations:
-            self.destination_layout.addLayout(self.destination_row(destination))
+            self.destinations_layout.addLayout(self.destination_row(destination))
 
 
     def destination_row(self, destination: str) -> QHBoxLayout:
         row = QHBoxLayout()
         label = QLabel(f"Backup Destination:")
         field = QLineEdit(destination)
+        remove_button = QPushButton("Remove")
+        remove_button.setToolTip("Remove this backup destination.")
+        remove_button.setFixedSize(60, 20)
+        remove_button.clicked.connect(lambda: self.remove_destination(destination, row))
         label.setBuddy(field)
         row.addWidget(label)
         row.addWidget(field)
+        row.addWidget(remove_button)
         return row
