@@ -18,7 +18,6 @@ class ConfigWidget(QWidget):
         QWidget.__init__(self)
         self.outer_layout = QVBoxLayout()
         self.setLayout(self.outer_layout)
-        self.outer_layout.addStretch()
 
         self.destinations_label = QLabel("Backup Destinations:")
         self.outer_layout.addWidget(self.destinations_label)
@@ -53,6 +52,9 @@ class ConfigWidget(QWidget):
         self.auto_backup_label.setBuddy(self.checked)
 
         self.outer_layout.addLayout(self.auto_layout)
+
+        # Soak up any leftover height at the bottom instead of spreading it between rows.
+        self.outer_layout.addStretch()
 
         self.resize(self.sizeHint())
 
