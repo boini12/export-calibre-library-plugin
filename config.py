@@ -5,6 +5,7 @@ from calibre.utils.config import JSONConfig
 from qt.core import QLabel, QWidget, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QPushButton
 
 from .constant import SETTINGS_KEY_DESTINATION, SETTINGS_KEY_AUTOMATIC, DEFAULT_BACKUP_DESTINATION
+from .path_line_edit import PathLineEdit
 
 prefs = JSONConfig('plugins/export_calibre_books')
 
@@ -124,14 +125,11 @@ class ConfigWidget(QWidget):
 
     def destination_row(self, destination: str) -> QHBoxLayout:
         row = QHBoxLayout()
-        label = QLabel(f"Backup Destination:")
-        field = QLineEdit(destination)
+        field = PathLineEdit(destination)
         remove_button = QPushButton("Remove")
         remove_button.setToolTip("Remove this backup destination.")
         remove_button.setFixedSize(60, 20)
         remove_button.clicked.connect(lambda: self.remove_destination(destination, row))
-        label.setBuddy(field)
-        row.addWidget(label)
         row.addWidget(field)
         row.addWidget(remove_button)
         return row
