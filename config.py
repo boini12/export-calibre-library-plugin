@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 
 from calibre.utils.config import JSONConfig
@@ -78,7 +79,7 @@ class ConfigWidget(QWidget):
         self.add_destination_button.clicked.connect(lambda: self.add_destination(self.new_destination_field.text()))
 
         self.new_destination_field.textChanged.connect(
-            lambda text: self.add_destination_button.setEnabled(text != "")
+            lambda text: self.add_destination_button.setEnabled(self.destination_exists(text))
         )
 
         self.show_new_destination_field()
@@ -95,6 +96,11 @@ class ConfigWidget(QWidget):
         self.extend_destintions_layout.removeWidget(self.add_destination_button)
         self.add_destination_button.deleteLater()
         self.extend_destinations_button.setEnabled(True)
+
+
+    def destination_exists(self, destination: str) -> bool:
+        destination = destination.strip()
+        return destination != "" and Path(destination).is_dir()
 
 
     def cache_destination(self, destination: str):
@@ -117,6 +123,7 @@ class ConfigWidget(QWidget):
 
 
     def add_destination(self, destination: str):
+        destination = destination.strip()
         self.cache_destination(destination)
         self.hide_new_destination_field()
         self.destinations_layout.addLayout(self.destination_row(destination))
