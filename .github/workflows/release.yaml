@@ -15,21 +15,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Runs before the release notes are extracted, so release_notes.md does
+      # not end up inside the plugin archive.
       - name: Create ZIP archive
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
           filename: 'export_calibre_books_plugin.zip'
-          exclusions: '*.git* /*node_modules/* .editorconfig README.md'
+          exclusions: '*.git* /*node_modules/* .editorconfig README.md CHANGELOG.md'
+
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          version="$(printf '%s' "${GITHUB_REF_NAME}" | sed 's/^v\.\{0,1\}//')"
+          awk -v version="$version" '
+            $0 ~ "^## \\[" version "\\]" { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > release_notes.md
+          if [ ! -s release_notes.md ]; then
+            echo "CHANGELOG.md has no section for version $version (tag ${GITHUB_REF_NAME})." >&2
+            exit 1
+          fi
+          cat release_notes.md
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: export_calibre_books_plugin.zip
           name: Release ${{ github.ref_name }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+          body_path: release_notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
