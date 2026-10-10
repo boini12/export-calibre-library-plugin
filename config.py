@@ -80,8 +80,8 @@ class ConfigWidget(QWidget):
 
 
     def show_new_destination_field(self):
-        self.extend_destintions_layout.addWidget(self.new_destination_field)
-        self.extend_destintions_layout.addWidget(self.add_destination_button)
+        self.extend_destintions_layout.insertWidget(1, self.new_destination_field)
+        self.extend_destintions_layout.insertWidget(2, self.add_destination_button)
 
 
     def hide_new_destination_field(self):
