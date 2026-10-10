@@ -19,9 +19,9 @@ class InterfacePlugin(InterfaceAction):
         icon = get_icons('images/icon.png', 'Export Calibre Books Plugin')
         
         self.qaction.setIcon(icon)
-        self.qaction.triggered.connect(self.show_dialog)
+        self.qaction.triggered.connect(self._show_dialog)
 
-    def show_dialog(self):
+    def _show_dialog(self):
         base_plugin_object = self.interface_action_base_plugin
         do_user_config = base_plugin_object.do_user_config
 

@@ -17,18 +17,18 @@ class ExportDialog(QDialog):
         self.setWindowIcon(icon)
 
         self.conf_button = QPushButton("Configure Backup Settings", self)
-        self.conf_button.clicked.connect(self.config)
+        self.conf_button.clicked.connect(self._config)
         self.l.addWidget(self.conf_button)
 
         self.export_button = QPushButton("Export Books Now", self)
-        self.export_button.clicked.connect(self.export_books)
+        self.export_button.clicked.connect(self._export_books)
         self.l.addWidget(self.export_button)
 
         self.resize(self.sizeHint())
 
 
-    def export_books(self):
+    def _export_books(self):
         export_books(self.db, self.current_db)
 
-    def config(self):
+    def _config(self):
         self.do_user_config(parent=self)

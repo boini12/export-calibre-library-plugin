@@ -48,7 +48,7 @@ class ConfigWidget(QWidget):
 
         self.destinations_layout = QVBoxLayout()
 
-        self.build_destinations()
+        self._build_destinations()
 
         self.outer_layout.addLayout(self.destinations_layout)
 
@@ -57,7 +57,7 @@ class ConfigWidget(QWidget):
         self.extend_destinations_button = QPushButton("+")
         self.extend_destinations_button.setToolTip("Add additional backup destinations.")
         self.extend_destinations_button.setFixedSize(20, 20)
-        self.extend_destinations_button.clicked.connect(self.new_destination_requested)
+        self.extend_destinations_button.clicked.connect(self._new_destination_requested)
 
         self.extend_destinations_layout.addWidget(self.extend_destinations_button)
         self.extend_destinations_layout.addStretch()
@@ -87,7 +87,7 @@ class ConfigWidget(QWidget):
         prefs[SETTINGS_KEY_AUTOMATIC] = self.checked.isChecked()
 
 
-    def new_destination_requested(self):
+    def _new_destination_requested(self):
         self.new_destination_field = QLineEdit()
         self.new_destination_field.setPlaceholderText("Enter additional backup destination")
 
@@ -97,21 +97,21 @@ class ConfigWidget(QWidget):
         self.add_destination_button.setToolTip("Add the new backup destination.")
         self.add_destination_button.setFixedSize(40, 20)
         self.add_destination_button.setEnabled(False)
-        self.add_destination_button.clicked.connect(lambda: self.add_destination(self.new_destination_field.text()))
+        self.add_destination_button.clicked.connect(lambda: self._add_destination(self.new_destination_field.text()))
 
         self.new_destination_field.textChanged.connect(
-            lambda text: self.add_destination_button.setEnabled(self.is_destination_valid(text))
+            lambda text: self.add_destination_button.setEnabled(self._is_destination_valid(text))
         )
 
-        self.show_new_destination_field()
+        self._show_new_destination_field()
 
 
-    def show_new_destination_field(self):
+    def _show_new_destination_field(self):
         self.extend_destinations_layout.insertWidget(1, self.new_destination_field)
         self.extend_destinations_layout.insertWidget(2, self.add_destination_button)
 
 
-    def hide_new_destination_field(self):
+    def _hide_new_destination_field(self):
         self.extend_destinations_layout.removeWidget(self.new_destination_field)
         self.new_destination_field.deleteLater()
         self.extend_destinations_layout.removeWidget(self.add_destination_button)
@@ -119,23 +119,23 @@ class ConfigWidget(QWidget):
         self.extend_destinations_button.setEnabled(True)
 
 
-    def is_destination_valid(self, destination: str) -> bool:
+    def _is_destination_valid(self, destination: str) -> bool:
         destination = destination.strip()
         return destination != "" and Path(destination).is_dir() and destination not in self.destinations
 
 
-    def cache_destination(self, destination: str):
+    def _cache_destination(self, destination: str):
         if destination and destination not in self.destinations:
             self.destinations.append(destination)
 
 
-    def remove_cached_destination(self, destination: str):
+    def _remove_cached_destination(self, destination: str):
         if destination in self.destinations:
             self.destinations.remove(destination)
 
 
-    def remove_destination(self, destination: str, row: QHBoxLayout):
-        self.remove_cached_destination(destination)
+    def _remove_destination(self, destination: str, row: QHBoxLayout):
+        self._remove_cached_destination(destination)
         self.destinations_layout.removeItem(row)
         for i in reversed(range(row.count())):
             widget = row.itemAt(i).widget()
@@ -143,26 +143,26 @@ class ConfigWidget(QWidget):
                 widget.setParent(None)
 
 
-    def add_destination(self, destination: str):
+    def _add_destination(self, destination: str):
         destination = destination.strip()
-        self.cache_destination(destination)
-        self.hide_new_destination_field()
-        self.destinations_layout.addLayout(self.destination_row(destination))
+        self._cache_destination(destination)
+        self._hide_new_destination_field()
+        self.destinations_layout.addLayout(self._destination_row(destination))
         self.extend_destinations_button.setEnabled(True)
 
 
-    def build_destinations(self):
+    def _build_destinations(self):
         for destination in self.destinations:
-            self.destinations_layout.addLayout(self.destination_row(destination))
+            self.destinations_layout.addLayout(self._destination_row(destination))
 
 
-    def destination_row(self, destination: str) -> QHBoxLayout:
+    def _destination_row(self, destination: str) -> QHBoxLayout:
         row = QHBoxLayout()
         field = PathLineEdit(destination)
         remove_button = QPushButton("Remove")
         remove_button.setToolTip("Remove this backup destination.")
         remove_button.setFixedSize(60, 20)
-        remove_button.clicked.connect(lambda: self.remove_destination(destination, row))
+        remove_button.clicked.connect(lambda: self._remove_destination(destination, row))
         row.addWidget(field)
         row.addWidget(remove_button)
         return row

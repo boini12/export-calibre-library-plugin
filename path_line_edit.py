@@ -14,7 +14,7 @@ class PathLineEdit(QLineEdit):
         self.setReadOnly(True)
         self.full_text = text
         self.setToolTip(text)
-        self.update_shown_text()
+        self._update_shown_text()
 
 
     def setText(self, text: str):
@@ -23,7 +23,7 @@ class PathLineEdit(QLineEdit):
         if self.hasFocus():
             QLineEdit.setText(self, text)
         else:
-            self.update_shown_text()
+            self._update_shown_text()
 
 
     def text(self) -> str:
@@ -37,15 +37,15 @@ class PathLineEdit(QLineEdit):
 
     def focusOutEvent(self, event):
         QLineEdit.focusOutEvent(self, event)
-        self.update_shown_text()
+        self._update_shown_text()
 
 
     def resizeEvent(self, event):
         QLineEdit.resizeEvent(self, event)
-        self.update_shown_text()
+        self._update_shown_text()
 
 
-    def update_shown_text(self):
+    def _update_shown_text(self):
         if self.hasFocus():
             return
         # Qt keeps a small horizontal margin inside the frame that is not
